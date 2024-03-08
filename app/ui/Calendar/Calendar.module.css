@@ -1,0 +1,146 @@
+/* GRID */
+
+.row {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.row_middle {
+    align-items: center;
+}
+
+.col {
+    flex-grow: 1;
+    flex-basis: 0;
+    max-width: 100%;
+}
+
+.col_start {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.col_center {
+    justify-content: center;
+    text-align: center;
+}
+
+.col_end {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+
+/* Calendar */
+
+.calendar {
+    display: block;
+    position: relative;
+    width: 100%;
+    background: var(--surface-container-lowest);
+}
+
+.calendar__header {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 2em;
+    padding: .5em 0;
+    color: var(--on-primary);
+    background: var(--primary);
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.calendar__header__icon {
+    cursor: pointer;
+    transition: .15s ease-out;
+}
+
+.calendar__header__icon:hover {
+    transform: scale(1.5);
+    transition: .25s ease-out;
+}
+
+.calendar__header__icon:first-of-type {
+    margin-left: 1em;
+}
+
+.calendar__header__icon:last-of-type {
+    margin-right: 1em;
+}
+
+.calendar__days {
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--on-surface);
+    font-size: 70%;
+    padding: .75em 0;
+}
+.calendar__week__number {
+    width: 2em;
+    justify-content: center;
+    text-align: center;
+}
+
+.calendar__cell {
+    position: relative;
+    height: 5em;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--surface-container-low);
+    transition: 0.25s ease-out;
+}
+
+.calendar__cell:hover {
+    background: var(--surface-container);
+    transition: 0.5s ease-out;
+}
+
+.calendar__selected {
+    border-left: 10px solid transparent;
+    border-image: linear-gradient(45deg, #1a8fff 0%,#53cbf1 40%) 1;
+}
+.calendar__cell__number {
+    position: absolute;
+    font-size: 82.5%;
+    line-height: 1;
+    top: .75em;
+    right: .75em;
+    font-weight: 700;
+}
+
+.calendar__disabled {
+    color: var(--surface-container-highest);
+    pointer-events: none;
+}
+
+.calendar__cell__bg {
+    font-weight: 700;
+    line-height: 1;
+    color: var(--on-surface);
+    opacity: 0;
+    font-size: 8em;
+    position: absolute;
+    top: -.2em;
+    right: -.05em;
+    transition: .25s ease-out;
+    letter-spacing: -.07em;
+}
+
+.calendar__cell:hover .calendar__cell__bg {
+    opacity: 0.05;
+    transition: .05s ease-in;
+}
+
+.calendar__col {
+    flex-grow: 0;
+    flex-basis: calc((100% - 2em)/7 );
+    width: calc((100% - 2em)/7);
+}

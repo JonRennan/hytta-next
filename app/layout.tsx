@@ -6,18 +6,18 @@ import React from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Hytte Booking",
-  description: "Eh",
+	title: "Hytte Booking",
+	description: "Eh",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="no">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
+	return (
+		<html lang="no">
+			<body className={inter.className}>{children}</body>
+		</html>
+	);
 }
