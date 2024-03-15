@@ -59,6 +59,7 @@
     --scrim: #000000;
     --shadow: #000000;
 
+    --airbnb: #FF385C;
 }
 
 @media (prefers-color-scheme: dark) {

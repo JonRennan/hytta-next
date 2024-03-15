@@ -3,9 +3,7 @@
 import React from "react";
 import {
 	format,
-	parse,
 	addDays,
-	isSameDay,
 	startOfWeek,
 	endOfWeek,
 	getWeek,
@@ -13,16 +11,21 @@ import {
 	endOfMonth,
 	addMonths,
 	subMonths,
-	isSameMonth,
 	setDefaultOptions,
 } from "date-fns";
 import { nb } from "date-fns/locale";
 import styles from "./Calendar.module.css";
+import { getCellStyles } from "@/app/lib/Calendar/utils";
+
+const undefinedDate = new Date(0)
 
 class Calendar extends React.Component {
 	state = {
 		currentDate: new Date(),
-		selectedDate: new Date(),
+		viewDate: new Date(),
+		selectedDateNew: undefinedDate,
+		selectedDateOld: undefinedDate,
+		airbnbReservation: [new Date(2024, 0, 30), new Date(2024, 1, 15, 23, 59,59, 999)],
 	};
 
 	renderHeader() {
@@ -31,44 +34,44 @@ class Calendar extends React.Component {
 		const dateFormat = "MMMM yyyy";
 
 		return (
-			<div className={styles.calendar__header}>
-				<div className={styles.calendar__header__icon} onClick={this.prevMonth}>
+			<div className={styles.header}>
+				<div className={styles.header__icon} onClick={this.prevMonth}>
 					{"<"}-
 				</div>
-				<span>{format(this.state.currentDate, dateFormat)}</span>
-				<div className={styles.calendar__header__icon} onClick={this.nextMonth}>
+				<span>{format(this.state.viewDate, dateFormat)}</span>
+				<div className={styles.header__icon} onClick={this.nextMonth}>
 					-{">"}
 				</div>
 			</div>
 		);
 	}
 
-	renderDays() {
+	renderWeek() {
 		const dateFormat = "EEEE";
 		const days = [];
 
-		const startDate = startOfWeek(this.state.currentDate);
+		const startDate = startOfWeek(this.state.viewDate);
 
-		days.push(<div className={styles.calendar__week__number} key="week-label">#</div>);
+		days.push(
+			<div className={styles.week__number__label} key="week-label">
+				#
+			</div>,
+		);
 
 		for (let i = 0; i < 7; i++) {
 			days.push(
-				<div className={[styles.col, styles.col_center].join(" ")} key={i}>
+				<div className={styles.weekday} key={i}>
 					{format(addDays(startDate, i), dateFormat)}
 				</div>,
 			);
 		}
 
-		return (
-			<div className={[styles.calendar__days, styles.row].join(" ")}>
-				{days}
-			</div>
-		);
+		return <div className={styles.weekdays}>{days}</div>;
 	}
 
 	renderCells() {
-		const { currentDate, selectedDate } = this.state;
-		const monthStart = startOfMonth(currentDate);
+		const { viewDate, selectedDateNew, selectedDateOld, airbnbReservation } = this.state;
+		const monthStart = startOfMonth(viewDate);
 		const monthEnd = endOfMonth(monthStart);
 		const startDate = startOfWeek(monthStart);
 		const endDate = endOfWeek(monthEnd);
@@ -83,63 +86,69 @@ class Calendar extends React.Component {
 
 		while (day <= endDate) {
 			weekNumber = getWeek(day);
-			days.push(<div className={styles.calendar__week__number} key={weekNumber}>{weekNumber}</div>,);
+			days.push(
+				<div className={styles.week__number} key={weekNumber}>
+					{weekNumber}
+				</div>,
+			);
 			for (let i = 0; i < 7; i++) {
 				formattedDate = format(day, dateFormat);
 				const cloneDay = day;
 				days.push(
 					<div
-						className={`${styles.col} ${styles.calendar__col} ${styles.calendar__cell} ${
-							!isSameMonth(day, monthStart)
-								? styles.calendar__disabled
-								: isSameDay(day, selectedDate)
-								  ? styles.calendar__selected
-								  : ""
-						}`}
+						className={getCellStyles(day, airbnbReservation, selectedDateNew, selectedDateOld, viewDate)}
 						key={day.toString()}
 						onClick={() => this.onDateClick(cloneDay)}
 					>
-						<span className={styles.calendar__cell__number}>
-							{formattedDate}
-						</span>
-						<span className={styles.calendar__cell__bg}>{formattedDate}</span>
+						<span className={styles.cell__number}>{formattedDate}</span>
+						{/*<span className={styles.cell__bg}>{formattedDate}</span>*/}
 					</div>,
 				);
 				day = addDays(day, 1);
 			}
 			rows.push(
-				<div className={styles.row} key={day.toString()}>
+				<div className={styles.week} key={day.toString()}>
 					{days}
 				</div>,
 			);
 			days = [];
 		}
-		return <div className="body">{rows}</div>;
+		return <div className={styles.body}>{rows}</div>;
 	}
 
 	onDateClick = (day: Date) => {
-		this.setState({
-			selectedDate: day,
-		});
+		const { selectedDateNew } = this.state
+
+		if (selectedDateNew === undefinedDate) {
+			this.setState({
+				selectedDateNew: day,
+				selectedDateOld: day,
+			});
+		} else {
+			this.setState({
+				selectedDateOld: selectedDateNew,
+				selectedDateNew: day,
+			});
+		}
 	};
 
 	nextMonth = () => {
 		this.setState({
-			currentDate: addMonths(this.state.currentDate, 1),
+			viewDate: addMonths(this.state.viewDate, 1),
 		});
 	};
 
 	prevMonth = () => {
 		this.setState({
-			currentDate: subMonths(this.state.currentDate, 1),
+			viewDate: subMonths(this.state.viewDate, 1),
 		});
 	};
 
 	render() {
 		return (
-			<div className="calendar">
+			<div className={styles.calendar}>
 				{this.renderHeader()}
-				{this.renderDays()}
+				{this.renderWeek()}
 				{this.renderCells()}
 			</div>
 		);
